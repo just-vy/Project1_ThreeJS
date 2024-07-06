@@ -3,14 +3,22 @@ import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import * as dat from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 
+import bluecloth from '../assets/blue cloth.jpg';
+import star from '../assets/star.png';
+import dark from '../assets/dark.jpg';
+import dark2 from '../assets/dark2.jpg'
+import copper from '../assets/copper_texture.png';
+import silver from '../assets/silver_texture.jpg';
+import gold from '../assets/gold_texture.jpg'
 
-
+const textureLoader = new THREE.TextureLoader();
 
 // -----------------------------------------------------------------------------------------
 // Set up/Config the renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
+// renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 // Set up/Config the scene
@@ -19,16 +27,19 @@ const scene = new THREE.Scene();
 // Set up/Config the camera
 const camera = new THREE.PerspectiveCamera(
     // 75,
-    45,
+    25,
     window.innerWidth/window.innerHeight,
-    0.1,
+    50,
     1000
 );
-// camera.position.set(0, 2, 5);
-camera.position.set(-10, 30, 30);
+
+camera.position.set(0, 100, 250);
+
+scene.fog = new THREE.Fog(0xffffff, 250, 2000);
+// scene.fog = new THREE.FogExp2(0xffffff, 0.01);
 
 // Set up/Config ambient light
-const ambientLight = new THREE.AmbientLight(0x7FBFFF, 1);
+const ambientLight = new THREE.AmbientLight(0xF8C8DC, 1);
 scene.add(ambientLight);
 
 // // Set up/Config directional light
@@ -39,15 +50,21 @@ scene.add(ambientLight);
 // scene.add(directionalLight);
 
 // Set up/Config spot light
-const spotLight = new THREE.SpotLight(0xffffff, 5);
+const spotLight = new THREE.SpotLight(0xA7C7E7, 25);
 spotLight.position.set(-150, 150, 0);
+spotLight.shadow.mapSize.width = 1024;
+spotLight.shadow.mapSize.height = 1024;
 spotLight.castShadow = true;
+spotLight.receiveShadow = true;
 spotLight.decay = 0;
 spotLight.angle = 0.5;
+spotLight.shadow.camera.near = 25;
+spotLight.shadow.camera.far = 1000;
+// spotLight.shadow.bias = -0.001;
 scene.add(spotLight);
 
 // Set up Background
-renderer.setClearColor(0X111111);
+renderer.setClearColor(0X222222);
 // -----------------------------------------------------------------------------------------
 
 
@@ -59,29 +76,29 @@ renderer.setClearColor(0X111111);
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.update();
 
-// Add Axes Helper
+// // Add Axes Helper
 // const axesHelper = new THREE.AxesHelper(1000);
 // scene.add(axesHelper);
 
-// // Add Grid Helper
-// const gridHelper = new THREE.GridHelper(1000);
-// scene.add(gridHelper);
+// Add Grid Helper
+const gridHelper = new THREE.GridHelper(200);
+scene.add(gridHelper);
 
-// // // Add Directional Light Helper
-// // const dLightHelper = new THREE.DirectionalLightHelper(directionalLight);
-// // scene.add(dLightHelper);
+// // Add Directional Light Helper
+// const dLightHelper = new THREE.DirectionalLightHelper(directionalLight);
+// scene.add(dLightHelper);
 
-// // // Add Directional Light Shadow Helper
-// // const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-// // scene.add(dLightShadowHelper);
+// // Add Directional Light Shadow Helper
+// const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+// scene.add(dLightShadowHelper);
 
-// // Add Spot Light Helper
-// const sLightHelper = new THREE.SpotLightHelper(spotLight);
-// scene.add(sLightHelper);
+// Add Spot Light Helper
+const sLightHelper = new THREE.SpotLightHelper(spotLight);
+scene.add(sLightHelper);
 
-// // Add Spot Light Shadow Helper
-// const sLightShadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-// scene.add(sLightShadowHelper);
+// Add Spot Light Shadow Helper
+const sLightShadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+scene.add(sLightShadowHelper);
 
 // // Add Camera Helper
 // const CameraHelper = new THREE.CameraHelper(camera);
@@ -93,37 +110,58 @@ orbit.update();
 
 // -----------------------------------------------------------------------------------------
 // Create a box object
-// const boxGeometry = new THREE.BoxGeometry();
-// const boxMaterial = new THREE.MeshStandardMaterial({
-//     color: 0xffffff,
-//     wireframe: false
-// });
-// const box = new THREE.Mesh(boxGeometry, boxMaterial);
-// box.position.y += 11;
-// box.castShadow = true;
-// scene.add(box);
+const boxGeometry = new THREE.BoxGeometry();
+const boxMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    wireframe: false,
+    map: textureLoader.load(dark)
+});
+const box = new THREE.Mesh(boxGeometry, boxMaterial);
+box.scale.set(15, 15, 15)
+box.position.set(0, 25, 25)
+box.castShadow = true;
+box.receiveShadow = true;
+scene.add(box);
 
-// // Create a plane object
-// const planeGeometry = new THREE.PlaneGeometry(200, 200);
-// const planeMaterial = new THREE.MeshStandardMaterial({
-//     color: 0xffff00,
-//     side: THREE.DoubleSide
-// });
-// const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-// plane.rotation.x = -0.5 * Math.PI;
-// plane.receiveShadow = true;
-// scene.add(plane);
+const box2Geometry = new THREE.BoxGeometry();
+const box2Material = [
+    new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(copper)}),
+    new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(copper)}),
+    new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(silver)}),
+    new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(silver)}),
+    new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(gold)}),
+    new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(gold)}),
+];
+const box2 = new THREE.Mesh(box2Geometry, box2Material);
+box2.scale.set(15, 15, 15);
+box2.position.set(0, 50, 25);
+box2.castShadow = true;
+scene.add(box2);
 
-// //Create a sphere object
-// const sphereGeometry = new THREE.SphereGeometry(4, 20, 20);
-// const sphereMaterial = new THREE.MeshStandardMaterial({
-//     color: 0x333333,
-//     wireframe: false
-// });
-// const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-// sphere.castShadow = true;
-// sphere.receiveShadow = true;
-// scene.add(sphere);
+// Create a plane object
+const planeGeometry = new THREE.PlaneGeometry(200, 200);
+const planeMaterial = new THREE.MeshStandardMaterial({
+    color: 0x47004c,
+    side: THREE.DoubleSide
+});
+const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+// plane.position.y -= 40;
+plane.rotation.x = -0.5 * Math.PI;
+plane.receiveShadow = true;
+scene.add(plane);
+
+//Create a sphere object
+const sphereGeometry = new THREE.SphereGeometry(25, 50, 50);
+const sphereMaterial = new THREE.MeshStandardMaterial({
+    color: 0xaaaaaa,
+    wireframe: false,
+    map: textureLoader.load(dark2)
+});
+const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+sphere.position.set(0, 0, -25)
+sphere.castShadow = true;
+sphere.receiveShadow = true;
+scene.add(sphere);
 // -----------------------------------------------------------------------------------------
 
 
@@ -133,55 +171,56 @@ orbit.update();
 // Set up dat.gui
 const gui = new dat.GUI();
 
-// Set up color, control, speed panel for box
-// const boxOption = ({
-//     boxColor: '#ffffff',
-//     wireframe: false,
-// });
+// Set up color, control panel for box
+const boxOption = ({
+    boxColor: '#ffffff',
+    wireframe: false,
+});
 
-// gui.addColor(boxOption, 'boxColor').onChange((e)=>{
-//     box.material.color.set(e);
-// });
+gui.addColor(boxOption, 'boxColor').onChange((e)=>{
+    box.material.color.set(e);
+});
 
-// gui.add(boxOption, 'wireframe').onChange((e)=>{
-//     box.material.wireframe = e;
-// });
-// // Set up color, control, speed panel for plane
-// const planeOption = ({
-//     planeColor: '#ffff00',
-//     wireframe: false
-// });
+gui.add(boxOption, 'wireframe').onChange((e)=>{
+    box.material.wireframe = e;
+});
 
-// gui.addColor(planeOption, 'planeColor').onChange((e)=>{
-//     plane.material.color.set(e);
-// });
+// Set up color, control panel for plane
+const planeOption = ({
+    planeColor: '#47004c',
+    wireframe: false
+});
 
-// gui.add(planeOption, 'wireframe').onChange((e)=>{
-//     plane.material.wireframe = e;
-// });
+gui.addColor(planeOption, 'planeColor').onChange((e)=>{
+    plane.material.color.set(e);
+});
 
-// // Set up color, control, speed panel for sphere
-// const sphereOption = ({
-//     sphereColor: '#333333',
-//     wireframe: false,
-//     speed: 0.01,
-//     angle: 0.2,
-//     penumbra: 0,
-//     intensity: 1
-// });
+gui.add(planeOption, 'wireframe').onChange((e)=>{
+    plane.material.wireframe = e;
+});
 
-// gui.addColor(sphereOption, 'sphereColor').onChange((e)=>{
-//     sphere.material.color.set(e);
-// });
+// Set up color, control, speed panel for sphere
+const sphereOption = ({
+    sphereColor: '#aaaaaa',
+    wireframe: false,
+    speed: 0.05,
+    angle: 0.5,
+    penumbra: 1,
+    intensity: 25
+});
 
-// gui.add(sphereOption, 'wireframe').onChange((e)=>{
-//     sphere.material.wireframe = e;
-// });
+gui.addColor(sphereOption, 'sphereColor').onChange((e)=>{
+    sphere.material.color.set(e);
+});
 
-// gui.add(sphereOption, 'speed', 0, 0.1);
-// gui.add(sphereOption, 'angle', 0, 0.5);
-// gui.add(sphereOption, 'penumbra', 0, 0.5);
-// gui.add(sphereOption, 'intensity', 0, 0.5);
+gui.add(sphereOption, 'wireframe').onChange((e)=>{
+    sphere.material.wireframe = e;
+});
+
+gui.add(sphereOption, 'speed', 0, 0.1);
+gui.add(sphereOption, 'angle', 0, 5);
+gui.add(sphereOption, 'penumbra', 0, 1);
+gui.add(sphereOption, 'intensity', 0, 50);
 // -----------------------------------------------------------------------------------------
 
 
@@ -199,10 +238,9 @@ let silverCoinModel;
 assetLoader.load(silverCoinURL.href, (gltf)=>{
     silverCoinModel = gltf.scene;
     silverCoinModel.scale.set(30, 30, 30);
-    silverCoinModel.position.set(0, 20, 0);
-    silverCoinModel.castShadow = true;
-    console.log('silver');
+    silverCoinModel.position.set(0, 40, 60);
     scene.add(silverCoinModel);
+    console.log('silver');
 }, undefined, (error)=>{console.error(error);})
 
 // Load Blender (glb/gltf) Copper Coin
@@ -212,10 +250,11 @@ let copperCoinModel;
 
 assetLoader.load(copperCoinURL.href, (gltf)=>{
     copperCoinModel = gltf.scene;
-    scene.add(copperCoinModel);
     copperCoinModel.scale.set(30, 30, 30);
-    copperCoinModel.position.set(-20, 20, 0);
+    copperCoinModel.position.set(-20, 40, 60);
     copperCoinModel.castShadow = true;
+    copperCoinModel.receiveShadow = true;
+    scene.add(copperCoinModel);
     console.log('copper');
 }, undefined, (error)=>{console.error(error)});
 
@@ -226,10 +265,11 @@ let goldCoinModel;
 
 assetLoader.load(goldCoinURL.href, (gltf)=>{
     goldCoinModel = gltf.scene;
-    scene.add(goldCoinModel);
     goldCoinModel.scale.set(30, 30, 30);
-    goldCoinModel.position.set(20, 20, 0);
+    goldCoinModel.position.set(20, 40, 60);
     goldCoinModel.castShadow = true;
+    goldCoinModel.receiveShadow = true;
+    scene.add(goldCoinModel);
     console.log('gold');
 }, undefined, (error)=>{console.error(error);})
 
@@ -242,41 +282,75 @@ assetLoader.load(diamondURL.href, (gltf)=>{
     diamondModel = gltf.scene;
     scene.add(diamondModel);
     diamondModel.scale.set(150, 150, 150);
-    diamondModel.position.set(0, 0, 0);
+    diamondModel.position.set(0, 20, 60);
     diamondModel.castShadow = true;
+    diamondModel.receiveShadow = true;
     console.log('diamond');
 }, undefined, (error)=>console.error(error));
+
+// // Load photo/texture
+
+// scene.background = textureLoader.load(dark2);
+// scene.background = textureLoader.load(dark);
+// scene.background = textureLoader.load(star);
+// scene.background = textureLoader.load(bluecloth);
+// const cubeTextureLoader = new THREE.CubeTextureLoader();
+// scene.background = cubeTextureLoader.load(
+//     [
+//         dark,
+//         dark,
+//         star,
+//         star,
+//         dark2,
+//         dark2
+//     ]
+// );
+
+
 
 // Add animation
 let step = 0;
 let speed = 0.01;
 
 function animate(){
-    // box.rotation.x += 0.01;
-    // box.rotation.y += 0.01;
-    // box.rotation.z += 0.01;
+    box.rotation.x += 0.01;
+    box.rotation.y += 0.01;
+    box.rotation.z += 0.01;
 
-    // sphere.rotation.y += 0.01;
+    box2.rotation.x += 0.01;
+    box2.rotation.y += 0.01;
+    box2.rotation.z += 0.01;
+    sphere.rotation.y += 0.01;
 
-    // step += sphereOption.speed;
-    // sphere.position.y = 10 * Math.abs(Math.sin(step));
+    step += sphereOption.speed;
+    sphere.position.y = 25 * Math.abs(Math.sin(step));
 
-    // spotLight.angle = sphereOption.angle;
-    // spotLight.penumbra = sphereOption.penumbra;
-    // spotLight.intensity = sphereOption.intensity;
+    spotLight.angle = sphereOption.angle;
+    spotLight.penumbra = sphereOption.penumbra;
+    spotLight.intensity = sphereOption.intensity;
     
     // sLightHelper.update();
 
-    if(silverCoinModel)
+    if(silverCoinModel){
+        // silverCoinModel.rotation.x += 0.01;
         silverCoinModel.rotation.y += 0.01;
-
-    if(copperCoinModel)
+        // silverCoinModel.rotation.z += 0.01;
+    }
+    if(copperCoinModel){
+        // copperCoinModel.rotation.x += 0.01;
         copperCoinModel.rotation.y += 0.01;
-
-    if(goldCoinModel)
+        // copperCoinModel.rotation.z += 0.01;
+    }
+    if(goldCoinModel){
+        // goldCoinModel.rotation.x += 0.01;
         goldCoinModel.rotation.y += 0.01;
-    if(diamondModel)
+        // goldCoinModel.rotation.z += 0.01;
+    }
+    if(diamondModel){
+        // diamondModel.rotation.x += 0.01;
         diamondModel.rotation.y += 0.01;
+        // diamondModel.rotation.z += 0.01;
+    }
 
     renderer.render(scene, camera);
 }
