@@ -10,6 +10,7 @@ import dark2 from '../assets/dark2.jpg'
 import copper from '../assets/copper_texture.png';
 import silver from '../assets/silver_texture.jpg';
 import gold from '../assets/gold_texture.jpg'
+import { log } from 'three/examples/jsm/nodes/Nodes.js';
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -51,13 +52,13 @@ scene.add(ambientLight);
 
 // Set up/Config spot light
 const spotLight = new THREE.SpotLight(0xA7C7E7, 25);
-spotLight.position.set(-150, 150, 0);
+spotLight.position.set(-100, 100, 0);
 spotLight.shadow.mapSize.width = 1024;
 spotLight.shadow.mapSize.height = 1024;
 spotLight.castShadow = true;
 spotLight.receiveShadow = true;
 spotLight.decay = 0;
-spotLight.angle = 0.5;
+spotLight.angle = 0.75;
 spotLight.shadow.camera.near = 25;
 spotLight.shadow.camera.far = 1000;
 // spotLight.shadow.bias = -0.001;
@@ -80,9 +81,9 @@ orbit.update();
 // const axesHelper = new THREE.AxesHelper(1000);
 // scene.add(axesHelper);
 
-// Add Grid Helper
-const gridHelper = new THREE.GridHelper(200);
-scene.add(gridHelper);
+// // Add Grid Helper
+// const gridHelper = new THREE.GridHelper(200);
+// scene.add(gridHelper);
 
 // // Add Directional Light Helper
 // const dLightHelper = new THREE.DirectionalLightHelper(directionalLight);
@@ -92,13 +93,13 @@ scene.add(gridHelper);
 // const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
 // scene.add(dLightShadowHelper);
 
-// Add Spot Light Helper
-const sLightHelper = new THREE.SpotLightHelper(spotLight);
-scene.add(sLightHelper);
+// // Add Spot Light Helper
+// const sLightHelper = new THREE.SpotLightHelper(spotLight);
+// scene.add(sLightHelper);
 
-// Add Spot Light Shadow Helper
-const sLightShadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-scene.add(sLightShadowHelper);
+// // Add Spot Light Shadow Helper
+// const sLightShadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+// scene.add(sLightShadowHelper);
 
 // // Add Camera Helper
 // const CameraHelper = new THREE.CameraHelper(camera);
@@ -109,21 +110,26 @@ scene.add(sLightShadowHelper);
 
 
 // -----------------------------------------------------------------------------------------
-// Create a box object
+// Create box object
 const boxGeometry = new THREE.BoxGeometry();
+
 const boxMaterial = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     wireframe: false,
     map: textureLoader.load(dark)
 });
+
 const box = new THREE.Mesh(boxGeometry, boxMaterial);
+
 box.scale.set(15, 15, 15)
 box.position.set(0, 25, 25)
 box.castShadow = true;
 box.receiveShadow = true;
 scene.add(box);
 
+// Create box2 object
 const box2Geometry = new THREE.BoxGeometry();
+
 const box2Material = [
     new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(copper)}),
     new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(copper)}),
@@ -132,36 +138,86 @@ const box2Material = [
     new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(gold)}),
     new THREE.MeshBasicMaterial({color: 0xaaaaaa, map: textureLoader.load(gold)}),
 ];
+
 const box2 = new THREE.Mesh(box2Geometry, box2Material);
+
 box2.scale.set(15, 15, 15);
 box2.position.set(0, 50, 25);
 box2.castShadow = true;
 scene.add(box2);
 
-// Create a plane object
+// Create plane object
 const planeGeometry = new THREE.PlaneGeometry(200, 200);
+
 const planeMaterial = new THREE.MeshStandardMaterial({
     color: 0x47004c,
     side: THREE.DoubleSide
 });
+
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+
 // plane.position.y -= 40;
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
 scene.add(plane);
+const planeName = plane.name;
 
-//Create a sphere object
+// Create plane2 object
+const plane2Geometry = new THREE.PlaneGeometry(40, 40, 40, 40);
+
+const plane2Material = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    wireframe: true
+});
+
+const plane2 = new THREE.Mesh(plane2Geometry, plane2Material);
+
+plane2.position.set(0, 35, 50);
+scene.add(plane2);
+
+// Create sphere object
 const sphereGeometry = new THREE.SphereGeometry(25, 50, 50);
+
 const sphereMaterial = new THREE.MeshStandardMaterial({
     color: 0xaaaaaa,
     wireframe: false,
     map: textureLoader.load(dark2)
 });
+
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-sphere.position.set(0, 0, -25)
+
+sphere.position.set(40, 0, -25)
 sphere.castShadow = true;
 sphere.receiveShadow = true;
 scene.add(sphere);
+const sphereID = sphere.id;
+
+// Create sphere2 object
+const sphere2Geometry = new THREE.SphereGeometry(25, 50, 50);
+
+// const vShader = `
+//     void main(){
+//         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+//     }
+// `;
+
+// const fShader = `
+//     void main(){
+//         gl_FragColor = vec4(0.5, 0.5, 1.0, 1.0);
+//     }
+// `;
+
+const sphere2Material = new THREE.ShaderMaterial({
+    vertexShader: document.getElementById("vertexShader").textContent,
+    fragmentShader: document.getElementById("fragmentShader").textContent 
+});
+
+const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
+
+sphere2.position.set(-40, 0, -25);
+sphere2.castShadow = true;
+sphere2.receiveShadow = true;
+scene.add(sphere2);
 // -----------------------------------------------------------------------------------------
 
 
@@ -203,8 +259,8 @@ gui.add(planeOption, 'wireframe').onChange((e)=>{
 const sphereOption = ({
     sphereColor: '#aaaaaa',
     wireframe: false,
-    speed: 0.05,
-    angle: 0.5,
+    speed: 0.02,
+    angle: 0.75,
     penumbra: 1,
     intensity: 25
 });
@@ -228,17 +284,22 @@ gui.add(sphereOption, 'intensity', 0, 50);
 
 // -----------------------------------------------------------------------------------------
 // Add Blender GLTF file
-const silverCoinURL = new URL('../assets/silvercoin.glb', import.meta.url);
-
 const assetLoader = new GLTFLoader();
 
 // Load Blender (glb/gltf) Silver Coin
+const silverCoinURL = new URL('../assets/silvercoin.glb', import.meta.url);
 let silverCoinModel;
 
 assetLoader.load(silverCoinURL.href, (gltf)=>{
     silverCoinModel = gltf.scene;
     silverCoinModel.scale.set(30, 30, 30);
     silverCoinModel.position.set(0, 40, 60);
+    silverCoinModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.receiveShadow = true;
+        }
+    });
     scene.add(silverCoinModel);
     console.log('silver');
 }, undefined, (error)=>{console.error(error);})
@@ -252,8 +313,12 @@ assetLoader.load(copperCoinURL.href, (gltf)=>{
     copperCoinModel = gltf.scene;
     copperCoinModel.scale.set(30, 30, 30);
     copperCoinModel.position.set(-20, 40, 60);
-    copperCoinModel.castShadow = true;
-    copperCoinModel.receiveShadow = true;
+    copperCoinModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.receiveShadow = true;
+        }
+    });
     scene.add(copperCoinModel);
     console.log('copper');
 }, undefined, (error)=>{console.error(error)});
@@ -267,26 +332,73 @@ assetLoader.load(goldCoinURL.href, (gltf)=>{
     goldCoinModel = gltf.scene;
     goldCoinModel.scale.set(30, 30, 30);
     goldCoinModel.position.set(20, 40, 60);
-    goldCoinModel.castShadow = true;
-    goldCoinModel.receiveShadow = true;
+    goldCoinModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.recieveShadow = true;
+        }
+    });
     scene.add(goldCoinModel);
     console.log('gold');
 }, undefined, (error)=>{console.error(error);})
 
 // Load Blender (glb/gltf) Diamond
-const diamondURL = new URL('../assets/diamond.glb', import.meta.url);
+const diamondURL = new URL('../assets/diamond1.glb', import.meta.url);
 
 let diamondModel;
 
 assetLoader.load(diamondURL.href, (gltf)=>{
     diamondModel = gltf.scene;
-    scene.add(diamondModel);
     diamondModel.scale.set(150, 150, 150);
     diamondModel.position.set(0, 20, 60);
-    diamondModel.castShadow = true;
-    diamondModel.receiveShadow = true;
+    diamondModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.recieveShadow = true;
+        }
+    });
+    scene.add(diamondModel);
     console.log('diamond');
 }, undefined, (error)=>console.error(error));
+
+// Load Blender (glb/gltf) Sapphire
+const sapphireURL = new URL('../assets/sapphire.glb', import.meta.url);
+
+let sapphireModel;
+
+assetLoader.load(sapphireURL.href, (gltf)=>{
+    sapphireModel = gltf.scene;
+    sapphireModel.scale.set(150, 150, 150);
+    sapphireModel.position.set(-20, 15, 60);
+    sapphireModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.recieveShadow = true;
+        }
+    });
+    scene.add(sapphireModel);
+    console.log('sapphire');
+}, undefined, (error)=>console.error(error));
+
+// Load Blender (glb/gltf) Amerald
+const ameraldURL = new URL('../assets/amerald.glb', import.meta.url);
+
+let ameraldModel;
+
+assetLoader.load(ameraldURL.href, (gltf)=>{
+    ameraldModel = gltf.scene;
+    ameraldModel.scale.set(175, 175, 175);
+    ameraldModel.position.set(20, 15, 60);
+    ameraldModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.recieveShadow = true;
+        }
+    });
+    scene.add(ameraldModel);
+    console.log('amerald');
+}, undefined, (error)=>console.error(error));
+
 
 // // Load photo/texture
 
@@ -306,7 +418,15 @@ assetLoader.load(diamondURL.href, (gltf)=>{
 //     ]
 // );
 
+// Select object from the scene
+const mousePosition = new THREE.Vector2();
 
+window.addEventListener('mousemove', (e)=>{
+    mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
+});
+
+const rayCaster = new THREE.Raycaster();
 
 // Add animation
 let step = 0;
@@ -320,10 +440,13 @@ function animate(){
     box2.rotation.x += 0.01;
     box2.rotation.y += 0.01;
     box2.rotation.z += 0.01;
-    sphere.rotation.y += 0.01;
 
+    sphere.rotation.y += 0.01;
     step += sphereOption.speed;
     sphere.position.y = 25 * Math.abs(Math.sin(step));
+
+    sphere2.rotation.y += 0.01;
+    sphere2.position.y = 25 * Math.abs(Math.sin(step));
 
     spotLight.angle = sphereOption.angle;
     spotLight.penumbra = sphereOption.penumbra;
@@ -350,9 +473,44 @@ function animate(){
         // diamondModel.rotation.x += 0.01;
         diamondModel.rotation.y += 0.01;
         // diamondModel.rotation.z += 0.01;
+    } 
+
+    if(sapphireModel){
+        // sapphireModel.rotation.x += 0.01;
+        sapphireModel.rotation.y += 0.01;
+        // sapphireModel.rotation.z += 0.01;
     }
 
+    if(ameraldModel){
+        // ameraldModel.rotation.x += 0.01;
+        ameraldModel.rotation.y += 0.01;
+        // ameraldModel.rotation.z += 0.01;
+    }
+
+    // plane2.geometry.attributes.position.array[0] += 100;
+    // plane2.geometry.attributes.position.array[1] += 100;
+    plane2.geometry.attributes.position.array[2] += 1 * Math.random();
+    const lastPointZ = plane2.geometry.attributes.position.array.length - 1;
+    plane2.geometry.attributes.position.array[lastPointZ] += 1 * Math.random();
+    plane2.geometry.attributes.position.needsUpdate = true;
+
+    rayCaster.setFromCamera(mousePosition, camera);
+    const intersects = rayCaster.intersectObjects(scene.children);
+    console.log(intersects);
+
+    for (let i = 0; i < intersects.length; i++) {
+        // if (intersects[i].object.id === sphereID)
+        //     intersects[i].object.material.color.set(0x000000);
+        if (intersects[i].object.name === planeName)
+            intersects[i].object.rotation.z += 0.01;
+    }
     renderer.render(scene, camera);
 }
 
 renderer.setAnimationLoop(animate);
+
+window.addEventListener('resize', ()=>{
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
