@@ -400,6 +400,48 @@ assetLoader.load(sapphireURL.href, (gltf)=>{
     console.log('sapphire');
 }, undefined, (error)=>console.error(error));
 
+// Load Blender (glb/gltf) Ruby
+const rubyURL = new URL('../assets/ruby.glb', import.meta.url);
+
+let rubyModel;
+
+assetLoader.load(rubyURL.href, (gltf)=>{
+    rubyModel = gltf.scene;
+    // rubyModel.scale.set(150, 150, 150);
+    // rubyModel.position.set(-20, 15, 60);
+    rubyModel.scale.set(0.25, 0.25, 0.25);
+    rubyModel.position.x = -0.2;
+    rubyModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.recieveShadow = true;
+        }
+    });
+    sapphireModel.add(rubyModel);
+    console.log('ruby');
+}, undefined, (error)=>console.error(error));
+
+// Load Blender (glb/gltf) Pink Diamond
+const pinkDiamondURL = new URL('../assets/pinkDiamond.glb', import.meta.url);
+
+let pinkDiamondModel;
+
+assetLoader.load(pinkDiamondURL.href, (gltf)=>{
+    pinkDiamondModel = gltf.scene;
+    // pinkDiamondModel.scale.set(150, 150, 150);
+    // pinkDiamondModel.position.set(-20, 15, 60);
+    pinkDiamondModel.scale.set(1, 1, 1);
+    pinkDiamondModel.position.x = 0.2;
+    pinkDiamondModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.recieveShadow = true;
+        }
+    });
+    sapphireModel.add(pinkDiamondModel);
+    console.log('pinkDiamond');
+}, undefined, (error)=>console.error(error));
+
 // Load Blender (glb/gltf) Emerald
 const emeraldURL = new URL('../assets/emerald.glb', import.meta.url);
 
@@ -421,27 +463,6 @@ assetLoader.load(emeraldURL.href, (gltf)=>{
     console.log('emerald');
 }, undefined, (error)=>console.error(error));
 
-// Load Blender (glb/gltf) Ruby
-const rubyURL = new URL('../assets/ruby.glb', import.meta.url);
-
-let rubyModel;
-
-assetLoader.load(rubyURL.href, (gltf)=>{
-    rubyModel = gltf.scene;
-    // rubyModel.scale.set(150, 150, 150);
-    // rubyModel.position.set(-20, 15, 60);
-    rubyModel.scale.set(0.25, 0.25, 0.25);
-    rubyModel.position.x = -0.25;
-    rubyModel.traverse((node)=>{
-        if(node.isMesh){
-            node.castShadow = true;
-            node.recieveShadow = true;
-        }
-    });
-    sapphireModel.add(rubyModel);
-    console.log('ruby');
-}, undefined, (error)=>console.error(error));
-
 // Load Blender (glb/gltf) Citrine
 const citrineURL = new URL('../assets/citrine.glb', import.meta.url);
 
@@ -452,7 +473,7 @@ assetLoader.load(citrineURL.href, (gltf)=>{
     // citrineModel.scale.set(175, 175, 175);
     // citrineModel.position.set(20, 15, 60);
     citrineModel.scale.set(1, 1, 1);
-    citrineModel.position.x = 0.25;
+    citrineModel.position.x = 0.2;
     citrineModel.traverse((node)=>{
         if(node.isMesh){
             node.castShadow = true;
@@ -461,6 +482,27 @@ assetLoader.load(citrineURL.href, (gltf)=>{
     });
     emeraldModel.add(citrineModel);
     console.log('citrine');
+}, undefined, (error)=>console.error(error));
+
+// Load Blender (glb/gltf) Amethyst
+const amethystURL = new URL('../assets/amethyst.glb', import.meta.url);
+
+let amethystModel;
+
+assetLoader.load(amethystURL.href, (gltf)=>{
+    amethystModel = gltf.scene;
+    // amethystModel.scale.set(175, 175, 175);
+    // amethystModel.position.set(20, 15, 60);
+    amethystModel.scale.set(1, 1, 1);
+    amethystModel.position.x = -0.2;
+    amethystModel.traverse((node)=>{
+        if(node.isMesh){
+            node.castShadow = true;
+            node.recieveShadow = true;
+        }
+    });
+    emeraldModel.add(amethystModel);
+    console.log('amethyst');
 }, undefined, (error)=>console.error(error));
 
 // // Load photo/texture
@@ -543,6 +585,12 @@ function animate(){
         // sapphireModel.rotation.z += 0.01;
     }
 
+    if(pinkDiamondModel){
+        // pinkDiamondModel.rotation.x += 0.01;
+        pinkDiamondModel.rotation.y += 0.01;
+        // pinkDiamondModel.rotation.z += 0.01;
+    }
+
     if(emeraldModel){
         // emeraldModel.rotation.x += 0.01;
         emeraldModel.rotation.y += 0.01;
@@ -559,6 +607,12 @@ function animate(){
         // citrineModel.rotation.x += 0.01;
         citrineModel.rotation.y += 0.01;
         // citrineModel.rotation.z += 0.01;
+    }
+
+    if(amethystModel){
+        // amethystModel.rotation.x += 0.01;
+        amethystModel.rotation.y += 0.01;
+        // amethystModel.rotation.z += 0.01;
     }
 
     // // plane2.geometry.attributes.position.array[0] += 100;
